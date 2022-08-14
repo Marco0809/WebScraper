@@ -74,3 +74,8 @@ gebote_aktuell.css('span::text').get().replace('\xa0EUR', '') //Replace single e
 gebote = products.css('div.col-xs-4')
 gebote.css('div::text').getall() // nur jeder zweite Eintrag
 ```
+
+# CRAWL
+```
+scrapy crawl Wine -O Wine.json
+```
