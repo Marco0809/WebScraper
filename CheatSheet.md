@@ -3,7 +3,7 @@
 ## Start Scrapy spiders
 On cmd, type:
 
-```scrapy crawl quotes```
+```scrapy crawl Wine```
 
 
 ## Invoke debugger
