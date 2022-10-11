@@ -40,7 +40,7 @@ class WineSpider(scrapy.Spider):
 
                 wine_dict = {#'Auction': auction_main_titel,
                     'name': winename,
-                    'winetype': origin,
+                    'origin': origin,
                     'description': description,
                     'state': state,
                     'packaging': packaging,
