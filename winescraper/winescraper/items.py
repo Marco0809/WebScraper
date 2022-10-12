@@ -10,3 +10,15 @@ class WinescraperItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+class WineItem(scrapy.Item):
+    auctiondate = scrapy.Field()
+    name = scrapy.Field()
+    vintage = scrapy.Field()
+    bottlesize_l = scrapy.Field()
+    origin = scrapy.Field()
+    description = scrapy.Field()
+    state = scrapy.Field()
+    packaging = scrapy.Field()
+    price = scrapy.Field()
+    minimum_price = scrapy.Field()
