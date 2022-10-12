@@ -50,7 +50,6 @@ class PostgresWinePipeline:
         try:
             idx = item["name"].rfind(',')
             bottlesize = float(item["name"][idx-1:idx+3].strip().replace(",", "."))
-            # float(item["name"][-6:-2].strip().replace(",", "."))
         except ValueError as error:
             print(item["name"])
             print("Casting to float error: " + repr(error))
@@ -61,24 +60,39 @@ class PostgresWinePipeline:
         except: 
             points = 0
 
+        # Extract Fill level
+        try: 
+            filllevel = item["state"][0:8]
+            idx = filllevel.rfind(',')
+            if idx > 0:     # exclude 'in', 'ts', ...
+                filllevel = filllevel[0:idx]
+
+        except:
+            filllevel = 0
+
+        #TODO Min Preis noch herausfiltern
+        #   1. Füllniveau: in, ts, hs, hf, in, ms-lms, 0,5cm, 1cm, 1,5cm, 2cm, 3cm, 4cm 
+        #   https://www.munichwinecompany.com/de/mwc-wine-fillings.html
+        #   2. Etikett: Etikett ganz leicht verschmutzt, ganz leicht beschädigt, Kapsel leicht beschädigt
+
+
         self.cur.execute(""" 
             INSERT INTO "Winehaus"."Wine"(
-	        auctiondate, name, vintage, bottlesize_l, origin, winepoints, description, state, packaging, price, minimum_price) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
+	        auctiondate, name, vintage, bottlesize_l, origin, winepoints, description, fill_level, state, packaging, price, minimum_price) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
                 item["auctiondate"].strftime('%Y-%m-%d %H:%M:%S'),
                 str(item["name"]),
-                int(re.search("[1-3][0-9]{3}", item["name"]).group()),  #TODO muss noch zu Vintage geparsed werden
+                int(re.search("[1-3][0-9]{3}", item["name"]).group()),  
                 bottlesize,  
                 str(item["origin"]),
                 points,
                 str(item["description"]),
+                filllevel,                  # fill level
                 str(item["state"]),
                 str(item["packaging"]),
                 float(item["price"]),
-                0,
+                0,                                  
             ))
-
-        # VALUES ('2022-01-10', 'TEST', 2010, 0.75, 'Bordeaux', 'The Vine ADV', NULL, NULL, NULL, NULL);
 
         self.connection.commit()
         return item
