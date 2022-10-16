@@ -5,12 +5,12 @@ from winescraper.items import WineItem
 import dateutil.parser as dparser
 
 class WineSpider(scrapy.Spider):
-    name = 'Wine'
+    name = 'Wine_1'
     basic_url = 'https://www.weinauktion.de/index.php?site=auktion&cat='
     # Note: Auktionen müssen Typ Internet sein, sonst kein Abschlussgebot vergeben
     start_index = 399           # latest site available 26-01-2019
-    end_index = 501             # Ab 454 kommt Zuschlag Feld für finalen Preis hinzu
-    end_index = 401
+    # end_index = 501             
+    end_index = 454             # Ab 454 kommt Zuschlag Feld für finalen Preis hinzu
     start_urls = []
     for idx in range(start_index, end_index):
         start_urls.extend([basic_url + str(idx)])
@@ -34,14 +34,19 @@ class WineSpider(scrapy.Spider):
                 wine_item['state'] = state.css('span::text').get()
                 packaging = products.css('div.verpackung')
                 wine_item['packaging'] = packaging.css('span::text').get() 
-                bids = products.css('div.col-xs-4')
-                current_bids = bids.css('b')
-                wine_item['price'] = current_bids.css('span::text').get().replace('\xa0EUR', '') # Only for 
-                price_recommendation = products.css('div.col-xs-4') ## TODO: Nur jeden zweiten Eintrag
-                wine_item['minimum_price'] = price_recommendation.css('div::text').get()
+                price = products.css('div.col-xs-4.col-md-4.col-lg-4')
+                wine_item['price'] = price.css('span::text').get().replace('\xa0EUR', '')#
+                min_max_price = products.css('div.col-xs-4.col-md-4.col-lg-4')
+                min_max_price = min_max_price.css('div:nth-child(n+3)::text').get().replace('EUR ', '')
+                wine_item['minimum_price'] = float(min_max_price.split('-')[0]) 
+                wine_item['maximum_price'] = float(min_max_price.split('-')[1]) 
 
                 yield wine_item
 
-            next_page = response.css('a.pagebar-link.pagebar-navlink.pagebar-navlink-next').attrib['href']
-            if next_page is not None:
-                yield response.follow(next_page, callback=self.parse)
+            try:
+                next_page = response.css('a.pagebar-link.pagebar-navlink.pagebar-navlink-next').attrib['href']
+                if next_page is not None:
+                    yield response.follow(next_page, callback=self.parse)
+            except Exception as e:
+                print("Error thrown: " + e)
+                pass

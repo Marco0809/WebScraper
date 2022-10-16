@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS "Winehaus"."Wine"
 	State Varchar(255),
 	Packaging Varchar(255),
 	Price Float,
-	Minimum_Price Float
+	Minimum_Price Float,
+	Maximum_Price Float
 )
 
 TABLESPACE pg_default;

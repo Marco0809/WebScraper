@@ -38,7 +38,8 @@ class PostgresWinePipeline:
                 State Varchar(255),
                 Packaging Varchar(255),
                 Price Float,
-                Minimum_Price Float
+                Minimum_Price Float,
+                Maximum_Price Float
             )
         """)
 
@@ -58,6 +59,7 @@ class PostgresWinePipeline:
         try:
             points = int(item["description"][0:2])
         except: 
+            print("No Points found")
             points = 0
 
         # Extract Fill level
@@ -66,33 +68,45 @@ class PostgresWinePipeline:
             idx = filllevel.rfind(',')
             if idx > 0:     # exclude 'in', 'ts', ...
                 filllevel = filllevel[0:idx]
-
         except:
             filllevel = 0
+
+        # Extract vintage
+        try:
+            vintage = int(re.search("[1-3][0-9]{3}", item["name"]).group())
+        except Exception as e:
+            vintage = 0
+            print("No vintage found: " + repr(e))
+            pass
+
 
         #TODO Min Preis noch herausfiltern
         #   1. Füllniveau: in, ts, hs, hf, in, ms-lms, 0,5cm, 1cm, 1,5cm, 2cm, 3cm, 4cm 
         #   https://www.munichwinecompany.com/de/mwc-wine-fillings.html
         #   2. Etikett: Etikett ganz leicht verschmutzt, ganz leicht beschädigt, Kapsel leicht beschädigt
 
-
-        self.cur.execute(""" 
-            INSERT INTO "Winehaus"."Wine"(
-	        auctiondate, name, vintage, bottlesize_l, origin, winepoints, description, fill_level, state, packaging, price, minimum_price) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
-                item["auctiondate"].strftime('%Y-%m-%d %H:%M:%S'),
-                str(item["name"]),
-                int(re.search("[1-3][0-9]{3}", item["name"]).group()),  
-                bottlesize,  
-                str(item["origin"]),
-                points,
-                str(item["description"]),
-                filllevel,                  # fill level
-                str(item["state"]),
-                str(item["packaging"]),
-                float(item["price"]),
-                0,                                  
-            ))
+        try:
+            self.cur.execute(""" 
+                INSERT INTO "Winehaus"."Wine"(
+                auctiondate, name, vintage, bottlesize_l, origin, winepoints, description, fill_level, state, packaging, price, minimum_price, maximum_price) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
+                    item["auctiondate"].strftime('%Y-%m-%d %H:%M:%S'),
+                    str(item["name"]),
+                    vintage,  # vintage
+                    bottlesize,  
+                    str(item["origin"]),
+                    points,
+                    str(item["description"]),
+                    filllevel,                  # fill level
+                    str(item["state"]),
+                    str(item["packaging"]),
+                    float(item["price"]),
+                    float(item["minimum_price"]),   
+                    float(item["maximum_price"]),                               
+                ))
+        except Exception as e:
+            print("Exception while inserting: " + repr(e))
+            pass
 
         self.connection.commit()
         return item

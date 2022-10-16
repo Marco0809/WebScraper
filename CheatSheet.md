@@ -77,5 +77,10 @@ gebote.css('div::text').getall() // nur jeder zweite Eintrag
 
 # CRAWL
 ```
-scrapy crawl Wine -O Wine.json
+scrapy crawl Wine_1 -O Wine.json
+```
+
+# Shell
+```
+scrapy shell "https://www.weinauktion.de/index.php?site=auktion&cat=400"
 ```

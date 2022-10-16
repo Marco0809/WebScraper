@@ -22,3 +22,4 @@ class WineItem(scrapy.Item):
     packaging = scrapy.Field()
     price = scrapy.Field()
     minimum_price = scrapy.Field()
+    maximum_price = scrapy.Field()
