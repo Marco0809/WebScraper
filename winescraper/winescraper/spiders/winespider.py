@@ -8,8 +8,7 @@ class WineSpider(scrapy.Spider):
     name = 'Wine_1'
     basic_url = 'https://www.weinauktion.de/index.php?site=auktion&cat='
     # Note: Auktionen müssen Typ Internet sein, sonst kein Abschlussgebot vergeben
-    start_index = 399           # latest site available 26-01-2019
-    # end_index = 501             
+    start_index = 399           # latest site available 26-01-2019          
     end_index = 454             # Ab 454 kommt Zuschlag Feld für finalen Preis hinzu
     start_urls = []
     for idx in range(start_index, end_index):
