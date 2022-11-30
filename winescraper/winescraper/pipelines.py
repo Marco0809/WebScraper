@@ -90,7 +90,7 @@ class PostgresWinePipeline:
                 INSERT INTO "Winehaus"."Wine"(
                 auctiondate, name, vintage, bottlesize_l, origin, winepoints, description, fill_level, state, packaging, price, minimum_price, maximum_price) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
-                    item["auctiondate"].strftime('%Y-%m-%d %H:%M:%S'),
+                    item["auctiondate"].strftime('%Y-%m-%d %H:%M:%S'),  # TODO: Fix parsing error with auction date where month and day get swapped
                     str(item["name"]),
                     vintage,  # vintage
                     bottlesize,  
