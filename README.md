@@ -1,2 +1,2 @@
 # WebScraper
-Webscraper for my Masterthesis - Weinauktion Hoppe
+Webscraper for Wine
